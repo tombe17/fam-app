@@ -92,25 +92,25 @@ export default async function RecipeList(props: RecipeListProps) {
                 <div className="flex items-center gap-4 flex-1">
                     {/* This span creates a small arrow that rotates 90 degrees when open */}
                     <span className="transition-transform group-open:rotate-90 text-gray-400 text-xs">▶</span>
-                    <h1 className="text-xl font-semibold">{recipe.recipe_title}</h1>
+                    <h1 className="text-sm md:text-xl font-semibold">{recipe.recipe_title}</h1>
                 </div>
                 <FavoriteButton userId={user?.id} recipeId={recipe.id} />
-                <p className="text-gray-600 text-sm">Cook Time: {recipe.cooking_time} mins</p>
+                <p className="hidden md:flex text-gray-600 text-sm">Cook Time: {recipe.cooking_time} mins</p>
             </summary>
 
             <div className="border p-4 rounded-lg shadow-sm relative pb-12">
-                <h4 className="font-semibold text-lg mb-2">Ingredients:</h4>
+                <h4 className="font-semibold text-base md:text-lg mb-2">Ingredients:</h4>
                 <ul className="list-disc pl-5 space-y-1 mb-2">
                     {recipe.ingredients.split('\n').map((ingredient: string, index: number) => (
                     // Only render if the line isn't empty (handles extra newlines)
                     ingredient.trim() && (
-                        <li key={index} className="text-gray-700 text-sm">
+                        <li key={index} className="text-gray-700 text-xs md:text-sm">
                         {ingredient.trim()}
                         </li>
                     )
                     ))}
                 </ul>
-                <h3 className="font-semibold text-lg mb-2">Instructions:</h3>
+                <h3 className="font-semibold text-base md:text-lg mb-2">Instructions:</h3>
                 <ol className="list-decimal pl-5 space-y-2 mb-2">
                     {recipe.instructions
                     .split('\n')
@@ -120,13 +120,13 @@ export default async function RecipeList(props: RecipeListProps) {
                         const cleanStep = step.replace(/^\d+[\.\-\)]?\s*/, "");
 
                         return (
-                        <li key={index} className="text-sm text-gray-600 leading-relaxed">
+                        <li key={index} className="text-xs md:text-sm text-gray-600 leading-relaxed">
                             {cleanStep}
                         </li>
                         );
                     })}
                 </ol>
-                <div className="absolute bottom-2 right-4 mt-2 text-sm">
+                <div className="absolute bottom-2 right-4 mt-2 text-xs md:text-sm">
                     <p className="italic text-gray-400">Added by: {recipe.user_id_creator}</p>
                 </div>
             </div>
