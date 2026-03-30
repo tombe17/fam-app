@@ -50,7 +50,7 @@ export default function RootLayout({
 
           {/* --- GLOBAL FOOTER START --- */}
           <footer className="w-full border-t py-8 mt-auto flex justify-center">
-            <div className="w-full max-w-6xl mx-auto px-5 flex justify-between items-center text-sm text-gray-500">
+            <div className="w-full max-w-6xl mx-auto px-5 flex justify-between items-center text-xs md:text-sm text-gray-500">
               <p>© 2026 The Bellows Family Website</p>
               <div className="flex items-center gap-4">
                 <span>Theme:</span>

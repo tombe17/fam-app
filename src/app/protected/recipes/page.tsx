@@ -16,11 +16,11 @@ export default async function RecipesPage({
 
   return (
     <main className="p-8 flex-1 w-full flex flex-col">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold mb-6">Family Recipes</h1>
+      <div className="flex flex-col md:flex-row items-center justify-between">
+        <h1 className="text-xl md:text-2xl font-bold mb-6">Family Cookbook</h1>
         <a 
           href="/protected/recipes/add"
-          className="mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-all flex items-center gap-2"
+          className="text-xs md:text-base mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-all flex items-center gap-2"
         >
         Add Recipe
         </a>

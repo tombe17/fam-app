@@ -36,6 +36,17 @@ export default async function RecipeList(props: RecipeListProps) {
     const { data: { user } } = await supabase.auth.getUser();
 
     console.log("RecipeList Props:", props);
+    //If there is favorites selected, get the favorites
+    let favoriteIds: number[] = [];
+    if (props.favorites === 'true' && user) {
+        //console.log("Getting Favorites")
+        const { data: favData } = await supabase
+            .from('Favorites')
+            .select('recipe_id')
+            .eq('user_id', user.id);
+        
+        favoriteIds = favData?.map(f => f.recipe_id) || [];
+    }
 
     // Default: empty (shows everything)
     let queryConfig = `
@@ -87,23 +98,34 @@ export default async function RecipeList(props: RecipeListProps) {
     const { data, error } = await fetch;
     //console.log("Fetched data:", data);
 
-    const recipes = data as unknown as Recipe[] | null;
+    let recipes = data as unknown as Recipe[] | null;
+    //combine the two
+    if (props.favorites === 'true' && recipes) {
+        // Only keep recipes that were found in the user's Favorites table
+        recipes = recipes.filter(recipe => favoriteIds.includes(recipe.id));
+    }
 
     if (error) {
         return <p>Error loading recipes: {error.message}</p>
     }
-    if (recipes?.length === 0) return <p>No recipes found for "{props.query}"</p>;
+    if (recipes?.length === 0) {
+        if (props.query) { // If there was a text search
+            return <p className="text-gray-500 italic">No recipes found for "{props.query}"</p>;
+        }
+        return <p className="text-gray-500 italic">No recipes match the selected filters.</p>; //just filters
+    }
 
     return (
         <div className="flex flex-col gap-4 w-full">
         {recipes?.map((recipe) => (
+
             <details key={recipe.id} className="group border rounded-lg shadow-sm bg-white overflow-hidden w-full">
             {/* The summary is the "Header" that is always visible */}
             <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 list-none w-full">
                 <div className="flex items-center gap-4 flex-1">
                     {/* This span creates a small arrow that rotates 90 degrees when open */}
                     <span className="transition-transform group-open:rotate-90 text-gray-400 text-xs">▶</span>
-                    <h1 className="text-xl font-semibold">{recipe.recipe_title}</h1>
+                    <h1 className="text-sm md:text-xl font-semibold">{recipe.recipe_title}</h1>
                 </div>
                 <FavoriteButton userId={user?.id} recipeId={recipe.id} />
                 <p className="hidden md:flex text-gray-600 text-sm">Cook Time: {formatTime(recipe.cooking_time)}</p>
@@ -116,13 +138,13 @@ export default async function RecipeList(props: RecipeListProps) {
                     {recipe.ingredients.split('\n').map((ingredient: string, index: number) => (
                     // Only render if the line isn't empty (handles extra newlines)
                     ingredient.trim() && (
-                        <li key={index} className="text-gray-700 text-sm">
+                        <li key={index} className="text-gray-700 text-xs md:text-sm">
                         {ingredient.trim()}
                         </li>
                     )
                     ))}
                 </ul>
-                <h3 className="font-semibold text-lg mb-2">Instructions:</h3>
+                <h3 className="font-semibold text-base md:text-lg mb-2">Instructions:</h3>
                 <ol className="list-decimal pl-5 space-y-2 mb-2">
                     {recipe.instructions
                     .split('\n')
@@ -132,13 +154,13 @@ export default async function RecipeList(props: RecipeListProps) {
                         const cleanStep = step.replace(/^\d+[\.\-\)]?\s*/, "");
 
                         return (
-                        <li key={index} className="text-sm text-gray-600 leading-relaxed">
+                        <li key={index} className="text-xs md:text-sm text-gray-600 leading-relaxed">
                             {cleanStep}
                         </li>
                         );
                     })}
                 </ol>
-                <div className="absolute bottom-2 right-4 mt-2 text-sm">
+                <div className="absolute bottom-2 right-4 mt-2 text-xs md:text-sm">
                     <p className="italic text-gray-400">Added by: {recipe.user_id_creator}</p>
                 </div>
             </div>
