@@ -10,7 +10,7 @@ const FILTER_CONFIG = {
   cuisine: ['Middle Eastern', 'Greek', 'Mexican', 'Korean', 'Italian', 'Indian', 'American'],
   dietary: ['Vegetarian', 'Nut-free', 'Keto'],
   meal_type: ['Pastry/Bread', 'Dessert', 'Side', 'Lunch', 'Dinner', 'Breakfast'],
-  favorites: ['favorite (Coming Soon)']
+  favorites: ['true']
 };
 
 export default function SearchRecipes() {
@@ -91,7 +91,7 @@ export default function SearchRecipes() {
                           : "bg-white border-gray-200 text-gray-600 hover:border-blue-400"
                       )}
                     >
-                      {option}
+                      {category === 'favorites' ? 'Favorites' : option}
                     </button>
                   );
                 })}

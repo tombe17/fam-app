@@ -25,6 +25,17 @@ export default async function RecipeList(props: RecipeListProps) {
     const { data: { user } } = await supabase.auth.getUser();
 
     console.log("RecipeList Props:", props);
+    //If there is favorites selected, get the favorites
+    let favoriteIds: number[] = [];
+    if (props.favorites === 'true' && user) {
+        //console.log("Getting Favorites")
+        const { data: favData } = await supabase
+            .from('Favorites')
+            .select('recipe_id')
+            .eq('user_id', user.id);
+        
+        favoriteIds = favData?.map(f => f.recipe_id) || [];
+    }
 
     // Default: empty (shows everything)
     let queryConfig = `
@@ -76,12 +87,22 @@ export default async function RecipeList(props: RecipeListProps) {
     const { data, error } = await fetch;
     //console.log("Fetched data:", data);
 
-    const recipes = data as unknown as Recipe[] | null;
+    let recipes = data as unknown as Recipe[] | null;
+    //combine the two
+    if (props.favorites === 'true' && recipes) {
+        // Only keep recipes that were found in the user's Favorites table
+        recipes = recipes.filter(recipe => favoriteIds.includes(recipe.id));
+    }
 
     if (error) {
         return <p>Error loading recipes: {error.message}</p>
     }
-    if (recipes?.length === 0) return <p>No recipes found for "{props.query}"</p>;
+    if (recipes?.length === 0) {
+        if (props.query) { // If there was a text search
+            return <p className="text-gray-500 italic">No recipes found for "{props.query}"</p>;
+        }
+        return <p className="text-gray-500 italic">No recipes match the selected filters.</p>; //just filters
+    }
 
     return (
         <div className="flex flex-col gap-4 w-full">
